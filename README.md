@@ -4,4 +4,3 @@ A simple Python Calculator project to master Git, GitHub Actions, and Continuous
 
 ## Project Status: Active Learning
 
-- Branching test completed
