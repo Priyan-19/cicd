@@ -1,0 +1,22 @@
+name: GitHub Actions Learning Lab
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  explore-runner:
+    name: Explore GitHub Cloud Runner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Welcome Message
+        run: echo "Hello Priyan! Welcome to GitHub Actions CI/CD Pipeline."
+
+      - name: Inspect Runner Environment
+        run: |
+          echo "=== Runner OS Info ==="
+          uname -a
+          echo "=== Pre-installed Python Version ==="
+          python3 --version
