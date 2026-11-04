@@ -7,7 +7,7 @@ class Calculator:
     @staticmethod
     def add(a: float, b: float) -> float:
         """Return the sum of a and b."""
-        return a + b
+        return a + 99
 
     @staticmethod
     def subtract(a: float, b: float) -> float:
