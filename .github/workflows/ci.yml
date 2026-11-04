@@ -3,13 +3,13 @@ name: Python Calculator CI/CD Pipeline
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]     # Triggers on version tags like v1.0.0, v1.0.1
   workflow_dispatch:
 
 jobs:
   test:
     name: 1. Run Unit Tests (CI)
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -31,7 +31,6 @@ jobs:
     name: 2. Build Release Artifact (Delivery)
     runs-on: ubuntu-latest
     needs: [test]
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -58,8 +57,8 @@ jobs:
     name: 3. Deploy to Production (CD)
     runs-on: ubuntu-latest
     needs: [build]
-    environment: production    # Triggers manual approval and loads environment secrets!
-
+    if: github.ref == 'refs/heads/main'   # Only run on main branch pushes
+    environment: production
     steps:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
@@ -71,11 +70,40 @@ jobs:
         env:
           API_KEY: ${{ secrets.DEPLOY_API_KEY }}
         run: |
-          echo "=== Starting Production Deployment ==="
-          echo "Verifying downloaded package artifacts:"
+          echo "Deploying artifact to Production..."
           ls -la release-dist/
-          echo "Authenticating deployment server with secret API Key..."
-          if [ -n "$API_KEY" ]; then
-            echo "API Key injected securely! (Encrypted by GitHub)"
-          fi
-          echo "Calculator v1.0.0 is successfully deployed to Production Live Servers! 🚀"
+          echo "Production deployment successful! 🚀"
+
+  publish-docker:
+    name: 4. Build & Publish Docker Image (GHCR)
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: startsWith(github.ref, 'refs/tags/v')   # Only runs when a version tag is pushed!
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata (Tags & Labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
