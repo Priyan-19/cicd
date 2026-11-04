@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "github-cicd-learning-lab"
+version = "1.0.0"
+description = "Python Calculator with CI/CD"
+readme = "README.md"
+requires-python = ">=3.10"
