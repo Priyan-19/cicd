@@ -25,3 +25,8 @@ class Calculator:
         if b == 0:
             raise ValueError("Cannot divide by zero")
         return a / b
+
+    @staticmethod
+    def power(a: float, b: float) -> float:
+        """Return a raised to the power of b."""
+        return a ** b

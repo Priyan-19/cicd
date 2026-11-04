@@ -33,3 +33,9 @@ def test_divide_by_zero():
     # Verify that dividing by zero raises a ValueError
     with pytest.raises(ValueError, match="Cannot divide by zero"):
         Calculator.divide(10, 0)
+    
+
+def test_power():
+    assert Calculator.power(2, 3) == 8
+    assert Calculator.power(5, 0) == 1
+    assert Calculator.power(2, -1) == 0.5
